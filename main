@@ -1,0 +1,35 @@
+import pyautogui
+from googleapiclient.discovery import build
+from google.oauth2.service_account import Credentials
+
+# Set up Google Docs API credentials
+credentials = Credentials.from_service_account_file('/path/to/credentials.json')
+doc_service = build('docs', 'v1', credentials=credentials)
+
+# Function to mimic human typing
+def type_like_human(text):
+    pyautogui.typewrite(text, interval=0.1)  # Adjust the interval as needed
+    pyautogui.press('enter')
+
+# Function to insert paragraph into Google Doc
+def insert_paragraph(doc_id, paragraph):
+    request = {
+        'insertText': {
+            'location': {
+                'index': 1  # Change the index as needed (1 for the beginning of the document)
+            },
+            'text': paragraph
+        }
+    }
+    response = doc_service.documents().batchUpdate(
+        documentId=doc_id, body={'requests': [request]}).execute()
+    print('Paragraph inserted successfully.')
+
+# Example usage
+document_id = 'YOUR_DOCUMENT_ID'  # Replace with the actual Google Doc ID
+text_to_type = '''This is a paragraph of text.
+You can add multiple lines here.
+Mimicking human typing speed.'''
+
+type_like_human(text_to_type)
+insert_paragraph(document_id, text_to_type)
